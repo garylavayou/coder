@@ -134,6 +134,10 @@ type Options struct {
 	ConfigSSH codersdk.SSHConfigResponse
 
 	SwaggerEndpoint bool
+
+	// LoggerIgnoreErrors causes the test logger to not fatal the test on Fatal
+	// and not error the test on Error or Critical.
+	LoggerIgnoreErrors bool
 }
 
 // New constructs a codersdk client connected to an in-memory API instance.
@@ -375,7 +379,7 @@ func NewWithAPI(t testing.TB, options *Options) (*codersdk.Client, io.Closer, *c
 	setHandler(coderAPI.RootHandler)
 	var provisionerCloser io.Closer = nopcloser{}
 	if options.IncludeProvisionerDaemon {
-		provisionerCloser = NewProvisionerDaemon(t, coderAPI)
+		provisionerCloser = NewProvisionerDaemon(t, coderAPI, options.LoggerIgnoreErrors)
 	}
 	client := codersdk.New(serverURL)
 	t.Cleanup(func() {
@@ -390,7 +394,7 @@ func NewWithAPI(t testing.TB, options *Options) (*codersdk.Client, io.Closer, *c
 // NewProvisionerDaemon launches a provisionerd instance configured to work
 // well with coderd testing. It registers the "echo" provisioner for
 // quick testing.
-func NewProvisionerDaemon(t testing.TB, coderAPI *coderd.API) io.Closer {
+func NewProvisionerDaemon(t testing.TB, coderAPI *coderd.API, loggerIgnoreErrors bool) io.Closer {
 	echoClient, echoServer := provisionersdk.MemTransportPipe()
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	t.Cleanup(func() {
@@ -410,7 +414,7 @@ func NewProvisionerDaemon(t testing.TB, coderAPI *coderd.API) io.Closer {
 		return coderAPI.CreateInMemoryProvisionerDaemon(ctx, 0)
 	}, &provisionerd.Options{
 		Filesystem:          fs,
-		Logger:              slogtest.Make(t, nil).Named("provisionerd").Leveled(slog.LevelDebug),
+		Logger:              slogtest.Make(t, &slogtest.Options{IgnoreErrors: loggerIgnoreErrors}).Named("provisionerd").Leveled(slog.LevelDebug),
 		JobPollInterval:     50 * time.Millisecond,
 		UpdateInterval:      250 * time.Millisecond,
 		ForceCancelInterval: time.Second,

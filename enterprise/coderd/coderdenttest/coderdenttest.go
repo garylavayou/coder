@@ -81,7 +81,7 @@ func NewWithAPI(t *testing.T, options *Options) (*codersdk.Client, io.Closer, *c
 	setHandler(coderAPI.AGPL.RootHandler)
 	var provisionerCloser io.Closer = nopcloser{}
 	if options.IncludeProvisionerDaemon {
-		provisionerCloser = coderdtest.NewProvisionerDaemon(t, coderAPI.AGPL)
+		provisionerCloser = coderdtest.NewProvisionerDaemon(t, coderAPI.AGPL, options.LoggerIgnoreErrors)
 	}
 
 	t.Cleanup(func() {

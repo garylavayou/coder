@@ -42,9 +42,9 @@ func TestWorkspaceQuota(t *testing.T) {
 		client, _, api := coderdenttest.NewWithAPI(t, &coderdenttest.Options{
 			UserWorkspaceQuota: max,
 		})
-		coderdtest.NewProvisionerDaemon(t, api.AGPL)
-		coderdtest.NewProvisionerDaemon(t, api.AGPL)
-		coderdtest.NewProvisionerDaemon(t, api.AGPL)
+		coderdtest.NewProvisionerDaemon(t, api.AGPL, false)
+		coderdtest.NewProvisionerDaemon(t, api.AGPL, false)
+		coderdtest.NewProvisionerDaemon(t, api.AGPL, false)
 
 		user := coderdtest.CreateFirstUser(t, client)
 		coderdenttest.AddLicense(t, client, coderdenttest.LicenseOptions{

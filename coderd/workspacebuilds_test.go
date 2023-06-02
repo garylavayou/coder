@@ -593,7 +593,7 @@ func TestWorkspaceBuildStatus(t *testing.T) {
 	// initial returned state is "pending"
 	require.EqualValues(t, codersdk.WorkspaceStatusPending, workspace.LatestBuild.Status)
 
-	closeDaemon = coderdtest.NewProvisionerDaemon(t, api)
+	closeDaemon = coderdtest.NewProvisionerDaemon(t, api, false)
 	// after successful build is "running"
 	_ = coderdtest.AwaitWorkspaceBuildJob(t, client, workspace.LatestBuild.ID)
 
@@ -628,7 +628,7 @@ func TestWorkspaceBuildStatus(t *testing.T) {
 	require.NoError(t, err)
 	require.EqualValues(t, codersdk.WorkspaceStatusCanceled, workspace.LatestBuild.Status)
 
-	_ = coderdtest.NewProvisionerDaemon(t, api)
+	_ = coderdtest.NewProvisionerDaemon(t, api, false)
 	// after successful delete is "deleted"
 	build = coderdtest.CreateWorkspaceBuild(t, client, workspace, database.WorkspaceTransitionDelete)
 	_ = coderdtest.AwaitWorkspaceBuildJob(t, client, build.ID)
