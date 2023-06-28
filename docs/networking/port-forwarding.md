@@ -201,7 +201,7 @@ First, [configure SSH](../ides.md#ssh-configuration) on your
 local machine. Then, use `ssh` to forward like so:
 
 ```console
-ssh -L 8080:localhost:8000 coder.myworkspace
+ssh -N -L 8080:localhost:8000 coder.<myworkspace>
 ```
 
 You can read more on SSH port forwarding [here](https://www.ssh.com/academy/ssh/tunneling/example).
